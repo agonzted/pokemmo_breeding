@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeMMO Breeding Planner - Calculadora de Crianza</title>
+    <meta name="description" content="Planifica tu crianza de Pokémon en PokeMMO. Selecciona IVs, naturaleza y obtén el diagrama de tu árbol de crianza completo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=17">
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="pokeball-icon">
+                    <div class="pokeball-top"></div>
+                    <div class="pokeball-line"></div>
+                    <div class="pokeball-center"></div>
+                    <div class="pokeball-bottom"></div>
+                </div>
+                <div>
+                    <h1>PokeMMO Breeding Planner</h1>
+                    <p class="subtitle">Calculadora de Crianza Competitiva</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Tab Navigation -->
+        <div class="mode-tabs" id="modeTabs">
+            <button class="mode-tab active" data-tab="planner">🧬 Planificador</button>
+            <button class="mode-tab" data-tab="optimizer">⚡ Optimizador</button>
+        </div>
+
+        <!-- ========== PLANNER TAB ========== -->
+        <div class="tab-content" id="plannerTab">
+
+        <!-- Step 1: Pokemon Selection -->
+        <section class="config-section" id="pokemonSection">
+            <div class="section-header">
+                <span class="step-badge">1</span>
+                <h2>Selecciona tu Pokémon</h2>
+            </div>
+            <div class="pokemon-selector">
+                <div class="search-container">
+                    <input type="text" id="pokemonSearch" class="search-input" placeholder="🔍 Buscar Pokémon por nombre o número (649 disponibles)...">
+                </div>
+                <div class="pokemon-grid" id="pokemonGrid">
+                    <!-- Pokemon cards will be populated by JS -->
+                </div>
+                <div class="selected-pokemon-display" id="selectedPokemonDisplay" style="display: none;">
+                    <div class="selected-pokemon-card">
+                        <img id="selectedPokemonImg" src="" alt="">
+                        <div class="selected-pokemon-info">
+                            <h3 id="selectedPokemonName"></h3>
+                            <span class="pokemon-number" id="selectedPokemonNumber"></span>
+                            <span class="egg-groups" id="selectedEggGroups"></span>
+                        </div>
+                        <button class="btn-change" id="changePokemonBtn">Cambiar</button>
+                    </div>
+                    <!-- Compatible Pokemon Panel -->
+                    <div class="compatible-panel" id="compatiblePanel">
+                        <button class="compatible-toggle" id="compatibleToggle">
+                            <span class="compatible-toggle-icon">🥚</span>
+                            <span>Pokémon Compatibles para Crianza</span>
+                            <span class="compatible-count" id="compatibleCount">0</span>
+                            <span class="compatible-arrow" id="compatibleArrow">▼</span>
+                        </button>
+                        <div class="compatible-content" id="compatibleContent" style="display: none;">
+                            <p class="compatible-description">Estos Pokémon comparten al menos un Grupo Huevo y pueden usarse como padres en la crianza (además de Ditto).</p>
+                            <div class="compatible-search-container">
+                                <input type="text" id="compatibleSearch" class="compatible-search-input" placeholder="🔍 Filtrar compatibles por nombre...">
+                            </div>
+                            <div class="compatible-groups" id="compatibleGroups">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Existing Pokemon Toggle -->
+        <section class="config-section existing-pokemon-section" id="existingSection">
+            <div class="section-header">
+                <span class="step-badge" style="background: var(--accent-purple);">✏️</span>
+                <h2>¿Mejorar un Pokémon Existente? <span class="optional-badge">(Opcional)</span></h2>
+            </div>
+            <p class="section-description">Si ya tienes un Pokémon con algunos IVs en 31, ingresa sus datos para calcular la ruta más corta.</p>
+            <div class="existing-toggle-row">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="existingToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span id="existingToggleLabel">Tengo un Pokémon que quiero mejorar</span>
+            </div>
+            <div id="existingInputPanel" class="existing-input-panel" style="display: none;">
+                <div class="existing-iv-grid">
+                    <div class="existing-iv-field">
+                        <label>❤️ HP</label>
+                        <input type="number" id="existIvHp" min="0" max="31" value="0" class="existing-iv-input" data-stat="hp">
+                    </div>
+                    <div class="existing-iv-field">
+                        <label>⚔️ Ataque</label>
+                        <input type="number" id="existIvAtk" min="0" max="31" value="0" class="existing-iv-input" data-stat="atk">
+                    </div>
+                    <div class="existing-iv-field">
+                        <label>🛡️ Defensa</label>
+                        <input type="number" id="existIvDef" min="0" max="31" value="0" class="existing-iv-input" data-stat="def">
+                    </div>
+                    <div class="existing-iv-field">
+                        <label>🔮 At. Esp</label>
+                        <input type="number" id="existIvSpa" min="0" max="31" value="0" class="existing-iv-input" data-stat="spa">
+                    </div>
+                    <div class="existing-iv-field">
+                        <label>🧿 Def. Esp</label>
+                        <input type="number" id="existIvSpd" min="0" max="31" value="0" class="existing-iv-input" data-stat="spd">
+                    </div>
+                    <div class="existing-iv-field">
+                        <label>⚡ Velocidad</label>
+                        <input type="number" id="existIvSpe" min="0" max="31" value="0" class="existing-iv-input" data-stat="spe">
+                    </div>
+                </div>
+                <div class="existing-extra-row">
+                    <div class="existing-field">
+                        <label>🌿 Naturaleza</label>
+                        <select id="existNature" class="existing-select">
+                            <option value="">— Sin naturaleza —</option>
+                        </select>
+                    </div>
+                    <div class="existing-field">
+                        <label>⚧ Género</label>
+                        <select id="existGender" class="existing-select">
+                            <option value="♂">♂ Macho</option>
+                            <option value="♀">♀ Hembra</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="existingSummary" class="existing-summary" style="display: none;"></div>
+            </div>
+        </section>
+
+        <!-- Step 2: IV Configuration -->
+        <section class="config-section" id="ivSection">
+            <div class="section-header">
+                <span class="step-badge">2</span>
+                <h2>Configura los IVs deseados</h2>
+            </div>
+            <p class="section-description">Activa los stats que quieres controlar. Por defecto se ponen a 31, pero puedes cambiar el valor exacto (0-31). Los stats activos se heredan con Power Items.</p>
+            <div class="iv-grid" id="ivGrid">
+                <div class="iv-card" data-stat="hp">
+                    <div class="iv-icon">❤️</div>
+                    <div class="iv-name">HP</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" data-stat="hp">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="iv-value-row" style="display:none;">
+                        <input type="number" class="iv-value-input" data-stat="hp" min="0" max="31" value="31">
+                    </div>
+                    <div class="iv-item-display"></div>
+                </div>
+                <div class="iv-card" data-stat="atk">
+                    <div class="iv-icon">⚔️</div>
+                    <div class="iv-name">Ataque</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" data-stat="atk">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="iv-value-row" style="display:none;">
+                        <input type="number" class="iv-value-input" data-stat="atk" min="0" max="31" value="31">
+                    </div>
+                    <div class="iv-item-display"></div>
+                </div>
+                <div class="iv-card" data-stat="def">
+                    <div class="iv-icon">🛡️</div>
+                    <div class="iv-name">Defensa</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" data-stat="def">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="iv-value-row" style="display:none;">
+                        <input type="number" class="iv-value-input" data-stat="def" min="0" max="31" value="31">
+                    </div>
+                    <div class="iv-item-display"></div>
+                </div>
+                <div class="iv-card" data-stat="spa">
+                    <div class="iv-icon">🔮</div>
+                    <div class="iv-name">At. Especial</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" data-stat="spa">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="iv-value-row" style="display:none;">
+                        <input type="number" class="iv-value-input" data-stat="spa" min="0" max="31" value="31">
+                    </div>
+                    <div class="iv-item-display"></div>
+                </div>
+                <div class="iv-card" data-stat="spd">
+                    <div class="iv-icon">🧿</div>
+                    <div class="iv-name">Def. Especial</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" data-stat="spd">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="iv-value-row" style="display:none;">
+                        <input type="number" class="iv-value-input" data-stat="spd" min="0" max="31" value="31">
+                    </div>
+                    <div class="iv-item-display"></div>
+                </div>
+                <div class="iv-card" data-stat="spe">
+                    <div class="iv-icon">⚡</div>
+                    <div class="iv-name">Velocidad</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" data-stat="spe">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="iv-value-row" style="display:none;">
+                        <input type="number" class="iv-value-input" data-stat="spe" min="0" max="31" value="31">
+                    </div>
+                    <div class="iv-item-display"></div>
+                </div>
+            </div>
+            <div class="iv-count-display">
+                IVs configurados: <span id="ivCount">0</span>/6
+            </div>
+        </section>
+
+        <!-- Step 3: Nature Selection (Optional) -->
+        <section class="config-section" id="natureSection">
+            <div class="section-header">
+                <span class="step-badge">3</span>
+                <h2>Selecciona la Naturaleza <span class="optional-badge">(Opcional)</span></h2>
+            </div>
+            <p class="section-description">Elige la naturaleza de tu Pokémon final. Usa la Piedra Eterna (Everstone) para heredarla.</p>
+            <div class="nature-options">
+                <div class="nature-filter">
+                    <button class="nature-filter-btn active" data-filter="all">Todas</button>
+                    <button class="nature-filter-btn" data-filter="atk">+Ataque</button>
+                    <button class="nature-filter-btn" data-filter="def">+Defensa</button>
+                    <button class="nature-filter-btn" data-filter="spa">+At.Esp</button>
+                    <button class="nature-filter-btn" data-filter="spd">+Def.Esp</button>
+                    <button class="nature-filter-btn" data-filter="spe">+Velocidad</button>
+                    <button class="nature-filter-btn" data-filter="neutral">Neutras</button>
+                </div>
+                <div class="nature-grid" id="natureGrid">
+                    <!-- Nature cards populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: Egg Moves (Optional, requires Pokémon) -->
+        <section class="config-section" id="eggMoveSection" style="display: none;">
+            <div class="section-header">
+                <span class="step-badge">4</span>
+                <h2>Movimientos Huevo <span class="optional-badge">(Opcional)</span></h2>
+            </div>
+            <p class="section-description">Selecciona un movimiento huevo que quieras heredar. Se buscará automáticamente qué Pokémon compatible puede enseñarlo.</p>
+            <div id="eggMoveLoading" class="egg-move-loading" style="display: none;">
+                <div class="spinner"></div>
+                <span>Buscando movimientos huevo...</span>
+            </div>
+            <div id="eggMoveGrid" class="egg-move-grid"></div>
+            <div id="eggMoveEmpty" class="egg-move-empty" style="display: none;">
+                <span>⚠️ No se encontraron movimientos huevo para este Pokémon en Gen 5.</span>
+            </div>
+            <!-- Selected egg move details -->
+            <div id="eggMoveSelected" class="egg-move-selected-panel" style="display: none;">
+                <h4>🥚 Movimiento seleccionado: <span id="eggMoveSelectedName"></span></h4>
+                <p class="egg-move-parent-desc">Elige el padre que enseñará este movimiento. Debe ser ♂ y del mismo Grupo Huevo.</p>
+                <div id="eggMoveParentLoading" class="egg-move-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Buscando padres compatibles...</span>
+                </div>
+                <div id="eggMoveParentGrid" class="egg-move-parent-grid"></div>
+                <div id="eggMoveNoParents" class="egg-move-empty" style="display: none;">
+                    <span>⚠️ No se encontraron padres compatibles que aprendan este movimiento por nivel en Gen 5.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Generate Button -->
+        <div class="generate-section" id="generateSection">
+            <button class="btn-generate" id="generateBtn">
+                <span class="btn-icon">🧬</span>
+                <span>Generar Ruta de Crianza</span>
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <!-- Summary -->
+            <div class="result-summary" id="resultSummary">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Requirements -->
+            <div class="requirements-panel" id="requirementsPanel">
+                <h3>📦 Lo que Necesitas para Empezar</h3>
+                <div class="requirements-grid" id="requirementsGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Step-by-step guide -->
+            <div class="step-guide" id="stepGuide">
+                <h3>📋 Pasos de Crianza</h3>
+                <div class="steps-list" id="stepsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Breeding Tree Diagram -->
+            <div class="tree-section" id="treeSection">
+                <h3>🌳 Diagrama del Árbol de Crianza</h3>
+                <p class="tree-instructions">El diagrama muestra la ruta de crianza de abajo hacia arriba. Los nodos inferiores son los padres base (1x31 IV) y el nodo superior es tu Pokémon final.</p>
+                <div class="tree-controls">
+                    <button class="tree-control-btn" id="zoomInBtn">➕ Zoom In</button>
+                    <button class="tree-control-btn" id="zoomOutBtn">➖ Zoom Out</button>
+                    <button class="tree-control-btn" id="resetZoomBtn">🔄 Reset</button>
+                </div>
+                <div class="tree-container" id="treeContainer">
+                    <canvas id="treeCanvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        </div><!-- end plannerTab -->
+
+        <!-- ========== OPTIMIZER TAB ========== -->
+        <div class="tab-content" id="optimizerTab" style="display: none;">
+            
+            <!-- Select Pokemon Species -->
+            <section class="config-section">
+                <div class="section-header">
+                    <span class="step-badge" style="background: linear-gradient(135deg, #f5c518, #ff9800);">⚡</span>
+                    <h2>Optimizador de Crianza</h2>
+                </div>
+                <p class="section-description">Ingresa los Pokémon que ya tienes y define el resultado final deseado. El optimizador calculará la ruta más corta.</p>
+                <div class="pokemon-selector">
+                    <div class="search-container">
+                        <input type="text" id="optPokemonSearch" class="search-input" placeholder="🔍 Buscar tu especie de Pokémon...">
+                    </div>
+                    <div class="pokemon-grid" id="optPokemonGrid" style="max-height: 120px;"></div>
+                    <div class="selected-pokemon-display" id="optSelectedDisplay" style="display: none;">
+                        <img id="optSelectedImg" src="" alt="">
+                        <div class="selected-info">
+                            <span class="selected-name" id="optSelectedName"></span>
+                            <span class="selected-number" id="optSelectedNumber"></span>
+                        </div>
+                        <button class="change-pokemon-btn" id="optChangeBtn">Cambiar</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- My Parents -->
+            <section class="config-section" id="optParentsSection">
+                <div class="section-header">
+                    <span class="step-badge">1</span>
+                    <h2>Mis Pokémon Disponibles</h2>
+                </div>
+                <p class="section-description">Agrega los Pokémon que ya tienes disponibles para criar.</p>
+                <div id="optParentCards" class="opt-parent-cards"></div>
+                <button class="btn-add-parent" id="optAddParentBtn">
+                    <span>➕</span> Agregar Pokémon
+                </button>
+            </section>
+
+            <!-- Desired Result -->
+            <section class="config-section" id="optDesiredSection">
+                <div class="section-header">
+                    <span class="step-badge">2</span>
+                    <h2>Resultado Deseado</h2>
+                </div>
+                <p class="section-description">Define cómo quieres que quede tu Pokémon final.</p>
+                
+                <h4 class="opt-sub-title">IVs deseados</h4>
+                <div class="opt-desired-ivs" id="optDesiredIVs">
+                    <label class="opt-iv-check"><input type="checkbox" data-stat="hp" checked> ❤️ HP</label>
+                    <label class="opt-iv-check"><input type="checkbox" data-stat="atk" checked> ⚔️ Atk</label>
+                    <label class="opt-iv-check"><input type="checkbox" data-stat="def"> 🛡️ Def</label>
+                    <label class="opt-iv-check"><input type="checkbox" data-stat="spa"> 🔮 SpA</label>
+                    <label class="opt-iv-check"><input type="checkbox" data-stat="spd"> 🧿 SpD</label>
+                    <label class="opt-iv-check"><input type="checkbox" data-stat="spe" checked> ⚡ Spe</label>
+                </div>
+
+                <div class="existing-extra-row" style="margin-top: 1rem;">
+                    <div class="existing-field">
+                        <label>🌿 Naturaleza deseada</label>
+                        <select id="optDesiredNature" class="existing-select">
+                            <option value="">— Sin preferencia —</option>
+                        </select>
+                    </div>
+                    <div class="existing-field">
+                        <label>🥚 Movimiento Huevo</label>
+                        <select id="optDesiredEggMove" class="existing-select">
+                            <option value="">— Ninguno —</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="optEggMoveParentSelect" style="display: none; margin-top: 0.75rem;">
+                    <label class="existing-field" style="margin-bottom: 4px;">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Padre del movimiento huevo</span>
+                    </label>
+                    <div id="optEggMoveParentGrid" class="egg-move-parent-grid"></div>
+                </div>
+            </section>
+
+            <!-- Generate Optimized Plan -->
+            <div class="generate-section">
+                <button class="btn-generate" id="optGenerateBtn" style="background: linear-gradient(135deg, #f5c518 0%, #ff9800 100%);">
+                    <span class="btn-icon">⚡</span>
+                    <span>Optimizar Ruta de Crianza</span>
+                </button>
+            </div>
+
+            <!-- Optimizer Results -->
+            <section class="results-section" id="optResultsSection" style="display: none;">
+                <div class="result-summary" id="optResultSummary"></div>
+                <div class="step-guide">
+                    <h3>📋 Plan Optimizado</h3>
+                    <div class="steps-list" id="optStepsList"></div>
+                </div>
+            </section>
+        </div><!-- end optimizerTab -->
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>PokeMMO Breeding Planner &copy; 2026 — Herramienta no oficial para <a href="https://pokemmo.com" target="_blank">PokeMMO</a></p>
+    </footer>
+
+    <script src="pokedex.js?v=17"></script>
+    <script src="breeding.js?v=17"></script>
+    <script src="app.js?v=17"></script>
+</body>
+</html>
