@@ -272,11 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.iv-value-input').forEach(inp => inp.value = '31');
         updateSelectedIVs();
 
-        // Show egg move section and fetch egg moves
-        els.eggMoveSection.style.display = 'block';
+        // Egg move section (HIDDEN)
+        // els.eggMoveSection.style.display = 'block';
         state.selectedEggMove = null;
         state.selectedEggParent = null;
-        fetchEggMoves(poke[0]);
+        // fetchEggMoves(poke[0]);
     }
 
     // ---- Compatible Pokemon ----
