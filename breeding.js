@@ -687,15 +687,27 @@ class BreedingPlanner {
         const powerItemCounts = {};
         this.collectPowerItems(tree, powerItemCounts);
         
-        const hasEverstone = this.nature !== null;
+        // Count how many breeding steps use an Everstone
+        const everstoneCount = this.countEverstones(tree);
 
         return {
             totalPokemon: leaves.length,
             totalBreedings: totalBreedings,
             leaves: leaves,
             powerItemCounts: powerItemCounts,
-            needsEverstone: hasEverstone
+            needsEverstone: everstoneCount > 0,
+            everstoneCount: everstoneCount
         };
+    }
+
+    countEverstones(node) {
+        if (!node) return 0;
+        let count = 0;
+        if (node.everstoneHolder) count++;
+        if (node.children) {
+            node.children.forEach(child => count += this.countEverstones(child));
+        }
+        return count;
     }
 
     collectPowerItems(node, counts) {

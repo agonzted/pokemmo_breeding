@@ -709,15 +709,16 @@ document.addEventListener('DOMContentLoaded', () => {
             itemsList.appendChild(row);
         }
         if (plan.requirements.needsEverstone) {
+            const evCount = plan.requirements.everstoneCount || 1;
             const row = document.createElement('div');
             row.className = 'shopping-row item-row';
             row.innerHTML = `
                 <div class="shopping-qty">
-                    <span class="qty-number">1×</span>
+                    <span class="qty-number">${evCount}×</span>
                 </div>
                 <div class="shopping-detail">
                     <div class="shopping-pokemon-name">💎 Piedra Eterna</div>
-                    <div class="shopping-item">Hereda naturaleza al pokémon hijo</div>
+                    <div class="shopping-item">Hereda naturaleza al pokémon hijo (1 por cada crianza con naturaleza)</div>
                 </div>
                 <div class="shopping-genders"></div>
             `;
