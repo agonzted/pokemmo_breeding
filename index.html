@@ -35,7 +35,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Tab Navigation -->
-        <div class="mode-tabs" id="modeTabs">
+        <div class="mode-tabs" id="modeTabs" style="display: none;">
             <button class="mode-tab active" data-tab="planner">🧬 Planificador</button>
             <button class="mode-tab" data-tab="optimizer">⚡ Optimizador</button>
         </div>
@@ -88,8 +88,8 @@
             </div>
         </section>
 
-        <!-- Existing Pokemon Toggle -->
-        <section class="config-section existing-pokemon-section" id="existingSection">
+        <!-- Existing Pokemon Toggle (HIDDEN) -->
+        <section class="config-section existing-pokemon-section" id="existingSection" style="display: none;">
             <div class="section-header">
                 <span class="step-badge" style="background: var(--accent-purple);">✏️</span>
                 <h2>¿Mejorar un Pokémon Existente? <span class="optional-badge">(Opcional)</span></h2>
@@ -335,8 +335,8 @@
 
         </div><!-- end plannerTab -->
 
-        <!-- ========== OPTIMIZER TAB ========== -->
-        <div class="tab-content" id="optimizerTab" style="display: none;">
+        <!-- ========== OPTIMIZER TAB (HIDDEN) ========== -->
+        <div class="tab-content" id="optimizerTab" style="display: none !important;">
             
             <!-- Select Pokemon Species -->
             <section class="config-section">
